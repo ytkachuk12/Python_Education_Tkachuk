@@ -1,3 +1,5 @@
+"""Learning oop"""
+
 from abc import ABC, abstractmethod
 
 
@@ -16,7 +18,7 @@ class Gasoline(Fuel):
         self.charge = charge
 
     def __str__(self):
-        print(f"Your engine needs {self.fuel_type}")
+        return f"Here you can refill by {self.fuel_type}"
 
 
 class Diesel(Fuel):
@@ -26,8 +28,8 @@ class Diesel(Fuel):
     def __init__(self, charge):
         self.charge = charge
 
-    def __str__(self, charge):
-        print(f"Your engine needs {Diesel.fuel_type}")
+    def __str__(self):
+        return f"Here you can refill by {self.fuel_type}"
 
 
 class Electric(Fuel):
@@ -38,44 +40,45 @@ class Electric(Fuel):
         self.charge = charge
 
     def __str__(self):
-        print(f"Your engine needs {Diesel.fuel_type}")
+        return f"Here you can refill by {self.fuel_type}"
 
 
 class Tank:
+    """fuel type, volume of tank, and level of fuel in tank"""
     def __init__(self, fuel_type: str, fuel_tank: int, fuel_level: int):
         self.fuel_tank = fuel_tank
         self.fuel_type = fuel_type
         self.fuel_level = fuel_level
 
     def __add__(self, other):
-        if isinstance(other, Gasoline) or isinstance(other, Diesel) or isinstance(other, Electric):
+        if isinstance(other, (Gasoline, Diesel, Electric)):
             if self. fuel_type == other.fuel_type:
-                print(F"Transport refilled on {other.charge}")
                 self.fuel_level = self.fuel_level + other.charge
-                return self.fuel_level
-        print("Transport needs another fuel type")
-        return self.fuel_level
+                return f"Transport refilled on {other.charge} \
+                and now in tank {self.fuel_level}"
+        return f"Transport needs {other.fuel_type} fuel type\
+        and now in tank {self.fuel_level}"
 
     @property
     def start_engine(self):
+        """check fuel level and start engine"""
         if self.fuel_level > 0:
-            print("Class print. Engine start: tank has {}".format(self.fuel_level))
+            print(f"Class print. Engine start: tank has {self.fuel_level}")
             return True
-        else:
-            print("Something wrong")
-            return False
+        print("Something wrong")
+        return False
 
     @start_engine.setter
     def start_engine(self, fuel_level: int):
+        """set fuel level"""
         print("вызов __set_engine")
         self.fuel_level = fuel_level
 
 
 class Engine:
-    """Engine power, volume, fuel type(object one of Fuel class"""
-    #__slots__ = ["power", "volume", "fuel", "turbine", "fuel_level"]
+    """Engine power, volume, fuel, turbine """
 
-    def __init__(self, power: int, volume: int, turbine: bool = False, *args):
+    def __init__(self, power: int, volume: int, *args, turbine: bool = False):
         self.power = power
         self.volume = volume
         self.turbine = turbine
@@ -83,6 +86,7 @@ class Engine:
 
     @staticmethod
     def stop_engine():
+        """just stop"""
         print("stop")
 
 
@@ -101,21 +105,23 @@ class Transport:
 
     @classmethod
     def get_wheels(cls):
-        print(f"Your vehicle has {cls.wheels} wheels")
+        """wheels param"""
+        return f"Your vehicle has {cls.wheels} wheels"
 
     def __eq__(self, other):
         if isinstance(other, Transport):
             return self.year == other.year
+        return f"not the same year of production {self.year} and {other.year}"
 
     def __contains__(self, item):
         if item in self.brand_db:
             print("brand in DB")
-        else:
-            self.brand_db.append(item)
-            print("added brand in DB")
+        self.brand_db.append(item)
+        print("added brand in DB")
 
 
 class Car(Transport, Engine, Tank):
+    """car, child class """
     def __init__(self, body_type, *args):
         # sedan, suv, minivan ets.
         self.body_type = body_type
@@ -123,6 +129,7 @@ class Car(Transport, Engine, Tank):
 
 
 class Bus(Transport, Engine, Tank):
+    """bus, child class"""
     def __init__(self, seats_type, *args):
         # seats or sleeping bus
         self.seats_type = seats_type
@@ -130,43 +137,41 @@ class Bus(Transport, Engine, Tank):
 
 
 class Truck(Transport, Engine, Tank):
-
+    """truck child class"""
     wheels = 6
 
     max_carrying_capacity = 10000
     min_carrying_capacity = 3000
 
-    def __init__(self, *args):
-        super().__init__(*args)
-
     def set_carrying(self, carrying_capacity):
+        """set carrying capacity between min and max"""
         if Truck.validate_carrying(carrying_capacity):
             self.carrying_capacity = carrying_capacity
-            print(f"Class print. Truck has {self.carrying_capacity} carrying capacity")
-            return self.carrying_capacity
-        else:
-            print("Wrong carrying capacity")
+            return f"your carrying cap is {self.carrying_capacity}"
+        return f"min carrying capacity is {self.min_carrying_capacity} \
+        and max is {self.max_carrying_capacity}"
 
     @classmethod
     def validate_carrying(cls, arg):
+        """check that capacity between min and max"""
         if cls.min_carrying_capacity <= arg <= cls.max_carrying_capacity:
             return True
         return False
 
     @classmethod
     def get_wheels(cls):
-        print(f"Your vehicle has {cls.wheels} wheels")
+        """wheels param"""
+        return f"Your vehicle has {cls.wheels} wheels"
 
 
 class Bike(Transport, Engine, Tank):
+    """bike child class"""
     wheels = 2
-
-    def __init__(self, *args):
-        super().__init__(*args)
 
     @classmethod
     def get_wheels(cls):
-        print(f"Your vehicle has {cls.wheels} wheels")
+        """wheels param"""
+        return f"Your vehicle has {cls.wheels} wheels"
 
 
 if __name__ == "__main__":
@@ -179,7 +184,7 @@ if __name__ == "__main__":
 
     # power: int, volume: int, turbine: bool = False
     car_eng = Engine(120, 2102)
-    truck_eng = Engine(560, 20750, True)
+    truck_eng = Engine(560, 20750)
     print(car_eng, car_eng.power)
     car_eng.stop_engine()
 
@@ -191,13 +196,12 @@ if __name__ == "__main__":
     print(tran == tran2)
 
     print()
-    truck = Truck("renault", "red", 2011, 3, 560, 20750, True, "diesel", 450, 0)
+    truck = Truck("renault", "red", 2011, 3, 560, 20750, "diesel", 450, 0)
     Truck.get_wheels()
-    print("Carrying", truck.set_carrying(4500))
+    print(truck.set_carrying(1500))
     print(truck + gas_charge)
     print(truck + diesel_charge)
     truck + diesel_charge
     truck.start_engine
     truck.start_engine = 30
     truck.start_engine
-
