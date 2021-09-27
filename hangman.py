@@ -2,11 +2,13 @@ import re
 import random
 from time import sleep
 from datetime import datetime
+from os import path
 
 from hangman_pics import LEN_HANGMAN, HANGMAN_PICS
 
 # All words must be in "words_library.txt" file. Each word starts new line.
-WORDS_LIBRARY_FILE = "/Users/yurii/PycharmProjects/task2_hangman/words_library.txt"
+WORDS_LIBRARY_PATH = path.dirname(path.abspath(__file__))
+WORDS_LIBRARY_FILE = "words_library.txt"
 
 
 def menu() -> str:
@@ -55,7 +57,7 @@ def game():
 
 def random_word() -> str:
     """Open file. Define random word (4<= word <12) from library. Strip() and lower() it"""
-    with open(WORDS_LIBRARY_FILE, "r") as f:
+    with open(WORDS_LIBRARY_PATH + WORDS_LIBRARY_FILE, "r") as f:
         words_library_list = list(f)
     # number of words in file
     len_words_library_list = len(words_library_list) - 1
