@@ -78,7 +78,7 @@ class Tank:
 class Engine:
     """Engine power, volume, fuel, turbine """
 
-    def __init__(self, power: int, volume: int, *args, turbine: bool = False):
+    def __init__(self, power: int, volume: int, turbine: bool, *args):
         self.power = power
         self.volume = volume
         self.turbine = turbine
@@ -122,18 +122,38 @@ class Transport:
 
 class Car(Transport, Engine, Tank):
     """car, child class """
-    def __init__(self, body_type, *args):
-        # sedan, suv, minivan ets.
-        self.body_type = body_type
+    allowed_drivers_license = "Type B"
+
+    def __init__(self, *args):
         super().__init__(*args)
+
+    def drive(self):
+        print(f"You can drive, cause you have {Car.allowed_drivers_license} driver's license")
+        super().drive()
 
 
 class Bus(Transport, Engine, Tank):
     """bus, child class"""
-    def __init__(self, seats_type, *args):
-        # seats or sleeping bus
-        self.seats_type = seats_type
+
+    allowed_drivers_license = "Type D"
+
+    def __init__(self, *args):
         super().__init__(*args)
+
+    def drive(self):
+        print(f"You can drive, cause you have {Bus.allowed_drivers_license} driver's license")
+
+
+class MiniVan(Car, Bus):
+
+    allowed_drivers_license = "Type D1"
+
+    def drive(self):
+        print(f"You can drive, cause you have {MiniVan.allowed_drivers_license} driver's license")
+        super().drive()
+
+    def another_drive(self):
+        super(Bus).drive()
 
 
 class Truck(Transport, Engine, Tank):
@@ -177,14 +197,17 @@ class Bike(Transport, Engine, Tank):
 if __name__ == "__main__":
     # charge
     gas_charge = Gasoline(35)
+    print(gas_charge)
     diesel_charge = Diesel(50)
+
+    print()
     # Tank fuel_type: str, fuel_tank: int, fuel_level: int
     car_tank = Tank("gas", 60, 0)
     truck_tank = Tank("diesel", 450, 0)
 
     # power: int, volume: int, turbine: bool = False
-    car_eng = Engine(120, 2102)
-    truck_eng = Engine(560, 20750)
+    car_eng = Engine(120, 2102, True)
+    truck_eng = Engine(560, 20750, True)
     print(car_eng, car_eng.power)
     car_eng.stop_engine()
 
@@ -196,8 +219,8 @@ if __name__ == "__main__":
     print(tran == tran2)
 
     print()
-    truck = Truck("renault", "red", 2011, 3, 560, 20750, "diesel", 450, 0)
-    Truck.get_wheels()
+    truck = Truck("renault", "red", 2011, 3, 560, 20750, False, "diesel", 450, 0)
+    print(Truck.get_wheels())
     print(truck.set_carrying(1500))
     print(truck + gas_charge)
     print(truck + diesel_charge)
@@ -205,3 +228,7 @@ if __name__ == "__main__":
     truck.start_engine
     truck.start_engine = 30
     truck.start_engine
+
+    print()
+    mini_van = MiniVan("renault", "red", 2011, 9, 560, 20750, False, "diesel", 450, 0)
+    mini_van.drive()
