@@ -74,9 +74,13 @@ class Tank:
         print("вызов __set_engine")
         self.fuel_level = fuel_level
 
+    def mro_method(self):
+        """just for demonstration MRO (method-resolution-order)"""
+        print(f"Upgrade your car: {self.brand}, {self.power}, {self.fuel_level}")
+
 
 class Engine:
-    """Engine power, volume, fuel, turbine """
+    """Engine power, volume, turbine """
 
     def __init__(self, power: int, volume: int, turbine: bool, *args):
         self.power = power
@@ -88,6 +92,11 @@ class Engine:
     def stop_engine():
         """just stop"""
         print("stop")
+
+    def mro_method(self):
+        """just for demonstration MRO (method-resolution-order)"""
+        self.power += 100
+        super().mro_method()
 
 
 class Transport:
@@ -119,6 +128,11 @@ class Transport:
         self.brand_db.append(item)
         print("added brand in DB")
 
+    def mro_method(self):
+        """just for demonstration MRO (method-resolution-order)"""
+        self.brand = self.brand + "_initiale"
+        super().mro_method()
+
 
 class Car(Transport, Engine, Tank):
     """car, child class """
@@ -128,6 +142,7 @@ class Car(Transport, Engine, Tank):
         super().__init__(*args)
 
     def drive(self):
+        """just for demonstration MRO (method-resolution-order)"""
         print(f"You can drive, cause you have {Car.allowed_drivers_license} driver's license")
         super().drive()
 
@@ -141,6 +156,7 @@ class Bus(Transport, Engine, Tank):
         super().__init__(*args)
 
     def drive(self):
+        """just for demonstration MRO (method-resolution-order)"""
         print(f"You can drive, cause you have {Bus.allowed_drivers_license} driver's license")
 
 
@@ -149,11 +165,9 @@ class MiniVan(Car, Bus):
     allowed_drivers_license = "Type D1"
 
     def drive(self):
+        """just for demonstration MRO (method-resolution-order)""" 
         print(f"You can drive, cause you have {MiniVan.allowed_drivers_license} driver's license")
         super().drive()
-
-    def another_drive(self):
-        super(Bus).drive()
 
 
 class Truck(Transport, Engine, Tank):
@@ -232,3 +246,4 @@ if __name__ == "__main__":
     print()
     mini_van = MiniVan("renault", "red", 2011, 9, 560, 20750, False, "diesel", 450, 0)
     mini_van.drive()
+    mini_van.mro_method()
