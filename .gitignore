@@ -1,5 +1,7 @@
 *.log
 .idea/
+logs/
+venv/
 **/logs
 **/venv
 
