@@ -1,3 +1,6 @@
+"""example of working functions: map, filter, reduce"""
+
+
 from functools import reduce
 
 # Use map to print the square of each numbers rounded
