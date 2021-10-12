@@ -82,8 +82,13 @@ def get_random_first_player(first_name: str, second_name: str) -> tuple:
 
 
 def turn(player: Player, game_board: dict):
-    """players turn. add current players peak on game board"""
-    game_board[int(input("Enter key number to fix spot: "))] = player.get_race()
+    """players turn. add current players pick on game board"""
+    # check player pick empty slot
+    while True:
+        player_pick = int(input("Enter key number to fix spot: "))
+        if game_board[player_pick] not in ("X", "O"):
+            game_board[player_pick] = player.get_race()
+            break
     print()
 
 
