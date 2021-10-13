@@ -1,6 +1,7 @@
 """Task data structures
 linked list, stack, queue, hash table, tree, graph"""
 
+
 from typing import Any
 
 
