@@ -14,6 +14,10 @@ class Sentence:
     def __init__(self, text: str):
         if self.line_checker(text) and self.sentence_checker(text):
             self.text = text
+        self._text = ""
+        self.list_other_chars = []
+        self.count_other_chars = 0
+        self.count_words = 0
 
     @staticmethod
     def line_checker(text):
@@ -31,39 +35,40 @@ class Sentence:
             raise ValueError
         # check that before space symbol we have no any symbol from '!', '.', '?'
         if re.search(r"([!?.]\s)", text):
-
             raise MultipleSentencesError
         return True
 
+    def takeout_symbols(self):
+        self._text = self.text
+        for symbol in self.text:
+            if symbol == " ":
+                self.other_chars.append(symbol)
+                self.count_other_chars += 1
+            elif symbol in (",", ":", ";", ".", "!", "?"):
+                self.other_chars.append(symbol)
+                self._text = self._text.replace(symbol, "")
+                self.count_other_chars += 1
+        return self._text
+
     def _words(self):
         """display one word"""
-        all_words = SentenceIterator(self.text)
-        for word_and_chars in iter(all_words):
-            yield word_and_chars
+        return SentenceIterator(self.takeout_symbols())
 
     @property
     def words(self):
         """display all words from the text"""
-        all_words = SentenceIterator(self.text)
-        for word_and_chars in all_words:
-            print(word_and_chars[0])
+        all_words = list(iter(SentenceIterator(self._text)))
+        self.count_words = len(all_words)
+        return all_words
 
     @property
     def other_chars(self):
         """display all other chars from text"""
-        all_words = SentenceIterator(self.text)
-        for word_and_chars in all_words:
-            print(word_and_chars[1])
+        return self.list_other_chars
 
     def __repr__(self):
         """display quantity of words and other chars"""
-        all_words = SentenceIterator(self.text)
-        word_count = 0
-        other_chars_count = 0
-        for position, word_and_chars in enumerate(all_words):
-            word_count = position + 1
-            other_chars_count += len(word_and_chars[1])
-        return f"<Sentence(words={word_count}, other_chars={other_chars_count})>"
+        return f"<Sentence(words={self.count_words}, other_chars={self.count_other_chars})>"
 
     def __iter__(self):
         return SentenceIterator(self.text)
@@ -76,45 +81,18 @@ class SentenceIterator:
         self.start = 0
         self.stop = len(self.text)
         self.word_stop = 0
-        self.segment = ""
-        self.other_chars = ""
         self.flag_stop_iteration = False
 
     def gen_word(self):
-        """find fist brake in sentence"""
-        self.other_chars = ""
-        if self.flag_stop_iteration:
-            raise StopIteration
-        # find first brake in checking segment
-        self.word_stop = self.text.find(" ", self.start, self.stop)
-        # case: if there is no any spaces in checking segment
-        if self.word_stop == -1:
-            # set end of checking segment to end of text
-            self.word_stop = self.stop
-            self.flag_stop_iteration = True
-        else:
-            # case: if space found - append space to other chars
-            self.other_chars += " "
-        # set checking segment
-        self.segment = self.text[self.start: self.word_stop]
-        # set start of new checking segment
-        self.start = self.word_stop + 1
-        return self.separate_word_and_symbols()
-
-    def separate_word_and_symbols(self):
-        """separate word from other symbols(like: .,!?)"""
-        # start checking from end of the word
-        for index in range(len(self.segment) - 1, 0, -1):
-            if self.segment[index] in (".", ",", "!", "?", " "):
-                # append other symbols
-                self.other_chars += self.segment[index]
-                # print(self.other_chars)
-            else:
-                break
-            # store other chars and clear for new iteration
-            other_chars = self.other_chars
-
-        return self.segment[: index+1], other_chars
+        if not self.flag_stop_iteration:
+            self.word_stop = self.text.find(" ", self.start, self.stop)
+            if self.word_stop == -1:
+                self.flag_stop_iteration = True
+                return self.text[self.start:self.stop]
+            word = self.text[self.start:self.word_stop]
+            self.start = self.word_stop + 1
+            return word
+        raise StopIteration
 
     def __next__(self):
         return self.gen_word()
@@ -123,9 +101,12 @@ class SentenceIterator:
         return self
 
 
-text1 = Sentence("Hello.., world!!!")
-
-# text1.words
-# text1.other_chars
-# print(text1._words())
-# print(text1)
+text1 = "Hello, world!!!"
+text2 = "How is it going., looks good!!!"
+text3 = "Hello, brave new world!!!"
+text4 = "Hello.. world!!!"
+sentence = Sentence(text4)
+print(next(sentence._words()))
+print(sentence.words)
+print(sentence.other_chars)
+print(sentence)
