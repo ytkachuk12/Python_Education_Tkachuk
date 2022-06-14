@@ -6,7 +6,8 @@
 
 def binary_search(array: list, num: int) -> int:
     """Binary search.
-     Return _binary search"""
+     Return _binary search
+    """
     low = 0
     high = len(array) - 1
     return _binary_search(array, low, high, num)
